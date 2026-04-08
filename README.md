@@ -14,4 +14,4 @@
 
 | Jhonny Vitor | @jhonnyvsn |
 
-| Miguel Trentini | @usuario |
+| Miguel Trentini | @MiguelTTortella |
