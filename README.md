@@ -15,3 +15,5 @@
 | Jhonny Vitor | @jhonnyvsn |
 
 | Miguel Trentini | @MiguelTTortella |
+
+| Geovana Novaes | @geovana-novaes |
