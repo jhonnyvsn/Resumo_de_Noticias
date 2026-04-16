@@ -25,7 +25,7 @@ graph TD
 A[Usuário] --> B[Interface]
 B --> C[Coleta de Notícias]
 C --> D[Processamento]
-D --> E[IA]
+D --> E[IA Gemini]
 E --> F[Resumo Gerado]
 F --> G[Exibição ao Usuário]
 ```
