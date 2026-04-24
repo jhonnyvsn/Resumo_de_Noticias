@@ -1,0 +1,118 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "buscador-noticias",
+        "formTitle": "Buscador de Notícias",
+        "formDescription": "Digite um tema para buscar as últimas notícias",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Qual assunto você quer ler? (ex: Tecnologia, Brasil)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1",
+      "name": "Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 1,
+      "position": [400, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://ok.surf/api/v1/cors/news-feed",
+        "options": {}
+      },
+      "id": "2",
+      "name": "Buscar Notícias",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [620, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.Business[0].title }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "3",
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [840, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=✅ Encontramos uma notícia para você!\n\nTítulo: {{ $json.Business[0].title }}\n\nLink: {{ $json.Business[0].source_url }}",
+        "options": {}
+      },
+      "id": "4",
+      "name": "Resposta Sucesso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1060, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "❌ Nenhuma notícia encontrada no momento. Tente novamente!",
+        "options": {}
+      },
+      "id": "5",
+      "name": "Resposta Erro",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1060, 400]
+    }
+  ],
+  "connections": {
+    "Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar Notícias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Notícias": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF": {
+      "main": [
+        [
+          {
+            "node": "Resposta Sucesso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Resposta Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
