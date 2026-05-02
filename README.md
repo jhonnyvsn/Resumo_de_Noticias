@@ -1,31 +1,26 @@
-# Resumo de Notícias
+## Como funciona
 
-## Sobre o Projeto
+O usuario informa um tema por meio do Google Forms. As respostas sao coletadas e processadas por uma automacao utilizando n8n, que consulta APIs de noticias. Os dados retornados passam por tratamento e sao enviados ao Gemini, que gera um resumo. Por fim, o usuario recebe a resposta processada.
 
-**Projeto:** Resumo de Notícias
+## Arquitetura do sistema
 
-**Problema que resolve:** Facilidade na hora de encontrar e ler as notícias do momento
-
-## Integrantes
-
-| Nome | GitHub |
-
-|------|--------|
-
-| Jhonny Vitor | @jhonnyvsn |
-
-| Miguel Trentini | @MiguelTTortella |
-
-| Geovana Novaes | @geovana-novaes |
-
-## Arquitetura
+O fluxo abaixo representa o funcionamento da aplicação:
 
 ```mermaid
-graph TD
-A[Usuário] --> B[Interface]
-B --> C[Coleta de Notícias]
-C --> D[Processamento]
-D --> E[IA Gemini]
-E --> F[Resumo Gerado]
-F --> G[Exibição ao Usuário]
+flowchart TD
+
+A[Usuario] --> B[Google Forms]
+B --> C[Respostas coletadas]
+
+C --> D[Automacao n8n]
+D --> E[API de Noticias]
+
+E --> F[Artigos retornados]
+F --> G[Processamento de dados]
+
+G --> H[Gemini IA]
+H --> I[Geracao do resumo]
+
+I --> J[Resposta final]
+J --> K[Usuario]
 ```
