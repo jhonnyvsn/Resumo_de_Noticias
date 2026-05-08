@@ -1,35 +1,19 @@
 {
+  "name": "My workflow",
   "nodes": [
-    {
-      "parameters": {
-        "path": "buscador-noticias",
-        "formTitle": "Buscador de Notícias",
-        "formDescription": "Digite um tema para buscar as últimas notícias",
-        "formFields": {
-          "values": [
-            {
-              "fieldLabel": "Qual assunto você quer ler? (ex: Tecnologia, Brasil)"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "1",
-      "name": "Form Trigger",
-      "type": "n8n-nodes-base.formTrigger",
-      "typeVersion": 1,
-      "position": [400, 300]
-    },
     {
       "parameters": {
         "url": "https://ok.surf/api/v1/cors/news-feed",
         "options": {}
       },
-      "id": "2",
+      "id": "fcd434a1-3c13-40fc-bb4e-89e38271b296",
       "name": "Buscar Notícias",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
-      "position": [620, 300]
+      "position": [
+        -448,
+        352
+      ]
     },
     {
       "parameters": {
@@ -42,11 +26,14 @@
           ]
         }
       },
-      "id": "3",
+      "id": "9dee706e-6126-4fae-bf31-cf002cc28ae3",
       "name": "IF",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [840, 300]
+      "position": [
+        -224,
+        352
+      ]
     },
     {
       "parameters": {
@@ -54,11 +41,14 @@
         "responseBody": "=✅ Encontramos uma notícia para você!\n\nTítulo: {{ $json.Business[0].title }}\n\nLink: {{ $json.Business[0].source_url }}",
         "options": {}
       },
-      "id": "4",
+      "id": "7995e72f-db9f-4bd7-80ed-79a4fb4ed4cf",
       "name": "Resposta Sucesso",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [1060, 200]
+      "position": [
+        0,
+        240
+      ]
     },
     {
       "parameters": {
@@ -66,25 +56,89 @@
         "responseBody": "❌ Nenhuma notícia encontrada no momento. Tente novamente!",
         "options": {}
       },
-      "id": "5",
+      "id": "b837ed17-7117-4ca5-b076-be7823c8fd6a",
       "name": "Resposta Erro",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [1060, 400]
-    }
-  ],
-  "connections": {
-    "Form Trigger": {
-      "main": [
-        [
-          {
-            "node": "Buscar Notícias",
-            "type": "main",
-            "index": 0
-          }
-        ]
+      "position": [
+        0,
+        448
       ]
     },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-flash-lite-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-flash-lite-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "você é um assistente de i.a que vai ajudar o usuarui com as duvidas sobre as noticias recebidas da api, ou seja, voce deve responder de forma curta e pratica todas as duvidas dele com relação a tecnologia, politica, comida e afins.",
+              "role": "model"
+            },
+            {
+              "content": "Tem alguma duvida sobre a notícia?"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        240
+      ],
+      "id": "86430100-9884-4c1a-8600-1b27397e8f9f",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Y2crVm4kjPlBXK5p",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "message": "Digite um tema para buscar as últimas notícias!\nQual assunto você quer ler? (ex: Tecnologia, Brasil)",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1.3,
+      "position": [
+        -656,
+        352
+      ],
+      "id": "ae95acb3-3e18-455a-8f54-764e71014dc4",
+      "name": "Chat",
+      "webhookId": "24beaca7-07a3-44a7-9cd9-51b886a33795"
+    },
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "responseNodes"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -848,
+        352
+      ],
+      "id": "11ef2fce-3a02-4ff2-b8e1-4dc8ab8b95a6",
+      "name": "When chat message received",
+      "webhookId": "9e650f61-146b-48c0-a891-625c49a13907",
+      "alwaysOutputData": true,
+      "executeOnce": false
+    }
+  ],
+  "pinData": {},
+  "connections": {
     "Buscar Notícias": {
       "main": [
         [
@@ -113,6 +167,51 @@
           }
         ]
       ]
+    },
+    "Resposta Sucesso": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "Buscar Notícias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
-  }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "da0a6395-2761-4cd4-8253-f3dadf950444",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "621da4ea391f4b0a07dac749a61a00c90a981e58bd8d1c337731083a3b367c74"
+  },
+  "id": "QfhsDyhYrou7TN8i",
+  "tags": []
 }
